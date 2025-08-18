@@ -198,4 +198,4 @@ I will have those tasks added under our sustaining jira project soon.
 
    **Increase the log**:
    
-   update root/sec/.env and set LOG_LEVEL=DEBUG . Then stop the container and restart it with above mentioned run command.
+   update root/sec/.env and set LOG_LEVEL=DEBUG. Then stop the container and restart it with above mentioned run command.
