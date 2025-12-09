@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  slack-worker:
+    build:
+      context: ..
+      dockerfile: slack_worker/Dockerfile
+    container_name: slack-worker
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    volumes:
+      # Shared volume for file-based locking
+      - slack-worker-locks:/tmp/slack_worker_locks
+      # Mount logs directory (optional)
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - TIMEZONE=UTC
+    networks:
+      - slack-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; exit(0 if os.path.exists('/tmp/slack_worker_locks') else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Example: Running multiple instances for horizontal scaling
+  slack-worker-replica:
+    build:
+      context: ..
+      dockerfile: slack_worker/Dockerfile
+    container_name: slack-worker-replica
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    volumes:
+      # MUST use the same volume for locking to work
+      - slack-worker-locks:/tmp/slack_worker_locks
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - TIMEZONE=UTC
+    networks:
+      - slack-network
+    profiles:
+      - scaling  # Only start with: docker-compose --profile scaling up
+
+volumes:
+  slack-worker-locks:
+    driver: local
+
+networks:
+  slack-network:
+    driver: bridge
+

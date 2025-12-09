@@ -110,4 +110,24 @@ class GSheet:
             self._assignment_wsheet.update_acell(cell_a1, user)
 
 
-gsheet = GSheet()
+# Lazy initialization - only create instance when actually used
+_gsheet_instance = None
+
+
+def get_gsheet():
+    """Get the GSheet instance, creating it lazily if needed."""
+    global _gsheet_instance
+    if _gsheet_instance is None:
+        _gsheet_instance = GSheet()
+    return _gsheet_instance
+
+
+# For backward compatibility - use property-like access
+class _LazyGSheet:
+    """Lazy wrapper that only initializes GSheet when accessed."""
+    
+    def __getattr__(self, name):
+        return getattr(get_gsheet(), name)
+
+
+gsheet = _LazyGSheet()
