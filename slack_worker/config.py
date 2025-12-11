@@ -36,7 +36,8 @@ class WorkerConfig:
         'https://app.smartsheet.com/b/publish?EQBCT=970c5ff6c67a4ca7a153e3a6ef993e77'
     )
     SMARTSHEET_ACCESS_TOKEN = os.getenv('SMARTSHEET_ACCESS_TOKEN', '')
-    SMARTSHEET_SHEET_ID = os.getenv('SMARTSHEET_SHEET_ID', '')
+    # Accept either SMARTSHEET_SHEET_ID or SMARTSHEET_REPORT_ID
+    SMARTSHEET_SHEET_ID = os.getenv('SMARTSHEET_SHEET_ID', '') or os.getenv('SMARTSHEET_REPORT_ID', '')
     
     # Google Sheets configuration
     ROTA_SHEET = getattr(parent_config, 'ROTA_SHEET', 'ROTA')
